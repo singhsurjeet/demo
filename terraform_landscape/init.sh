@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-export TF_PROJECT_ID="quixotic-hash-265113"
+export TF_PROJECT_ID=""
 export TF_REGION="europe-west3"
-export TF_BILLING_ACCOUNT_ID="0114AF-A8061F-7F222A"
+export TF_BILLING_ACCOUNT_ID=""
 export TF_FOLDER=
 export BUCKET_NAME=tf-state-bkup
 
