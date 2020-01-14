@@ -4,7 +4,7 @@
 
 
 variable "project_id" {
-  default = "quixotic-hash-265113"
+  default = ""
 }
 
 variable "region" {
