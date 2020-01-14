@@ -67,7 +67,17 @@ provider "google" {
   region  = var.region
   zone    = var.location
   ```
-Please specify the same credentials for terraform remote state backend. 
+Please specify the same credentials for terraform remote state backend and make sure to update the below variables in `init.sh` and `variables.sh`
+
+```
+TF_PROJECT_ID="<>
+TF_BILLING_ACCOUNT_ID="<>"
+
+variable "project_id" {
+  default = "quixotic-hash-265113"
+}
+
+```
 
 Now, execute the  `./init.sh` , which is nothing but a wrapper to set certain confinurations before terraform plan.
 
