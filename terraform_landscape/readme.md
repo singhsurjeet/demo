@@ -43,6 +43,14 @@ Finally, push the Docker image to your private Container Registry:
 
 ## Provision GCP infrastructure
 
+Ensure the required APIs are enabled:
+```
+gcloud services enable storage-api.googleapis.com
+gcloud services enable cloudresourcemanager.googleapis.com
+gcloud services enable compute.googleapis.com
+gcloud services enable container.googleapis.com
+gcloud services enable iam.googleapis.com
+```
 Make sure that you have minimum 0.12 version of terraform installed.
 
 Create a service account for terraform to provision the infrastructure.
