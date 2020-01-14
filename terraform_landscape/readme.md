@@ -26,19 +26,19 @@ gcloud auth configure-docker
 
 Now tag the flask image build earlier to push it to gcr.
 
-`docker tag docker_flask:latest "gcr.io/${PROJECT_ID}/docker_flask:v1"`
+`docker tag docker_flask:latest "gcr.io/${PROJECT_ID}/docker-flask:v1"`
 
-Alternatively, the source image is already built and uploaded here: `surjeet112/docker_flask:latest`
+Alternatively, the source image is already built and uploaded here: `surjeet112/docker-flask:latest`
 
 Then, simply pull and tag:
 
 ```
-docker pull surjeet112/docker_flask:latest
-docker tag surjeet112/docker_flask:latest "gcr.io/${PROJECT_ID}/docker_flask:v1"
+docker pull surjeet112/docker-flask:latest
+docker tag surjeet112/docker_flask:latest "gcr.io/${PROJECT_ID}/docker-flask:v1"
 ```
 Finally, push the Docker image to your private Container Registry:
 
-`docker push "gcr.io/${PROJECT_ID}/docker_flask:v1"`
+`docker push "gcr.io/${PROJECT_ID}/docker-flask:v1"`
 
 
 ## Provision GCP infrastructure
@@ -77,6 +77,40 @@ Execute `terraform plan` and finally run `terraform apply` to create the GKE inf
 
 ## Deploy docker_flask API
 
-First, configure kubectl to use the newly created cluster
+First, configure kubectl to use the newly created cluster, update project_id accordingly.
 
-`gcloud container clusters get-credentials <YOUR_CLUSTER_NAME> --region europe-west3`
+`gcloud container clusters get-credentials demo-private-cluster --zone europe-west3-a --project quixotic-hash-265113`
+
+Use the kubectl create command to create a Deployment named `docker-flask-deploy` on your cluster:
+
+`kubectl create deployment docker-flask-deploy --image=gcr.io/${PROJECT_ID}/docker-flask:v1 `
+
+Next, we need to expose the app to be accessible publicly
+
+`
+kubectl expose deployment docker-flask-deploy --type=LoadBalancer --port 80 --target-port 5000
+`
+
+This will take approximately a 1-2 minute to assign an external IP address to the service. You can follow the progress by running:
+
+`kubectl get svc -w`
+
+App should now be available over EXTERNAL-IP
+
+`open http://EXTERNAL-IP`
+
+
+## Cleaning Up
+
+First, delete the Kubernetes Service:
+
+`kubectl delete service docker-flask-deploy`
+
+This will destroy the Load Balancer created during the previous step
+
+Next, to destroy the GKE cluster, run the terraform destroy command:
+
+`terraform destroy`
+
+Further, you may want to delete the bucket and service account created for storing terraform plan.
+
