@@ -4,7 +4,7 @@ terraform {
 }
 
 provider "google" {
-  credentials = file("credentials.json")
+  credentials = file("./creds/serviceaccount.json")
   version = "~> 2.9.0"
   project = var.project_id
   region  = var.region
@@ -12,7 +12,7 @@ provider "google" {
 }
 
 provider "google-beta" {
-  credentials = file("credentials.json")
+  credentials = file("./creds/serviceaccount.json")
   version = "~> 2.9.0"
   project = var.project_id
   region  = var.region

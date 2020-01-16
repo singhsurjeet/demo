@@ -1,19 +1,19 @@
 #!/usr/bin/env bash
 
-export TF_PROJECT_ID=""
-export TF_REGION="europe-west3"
-export TF_BILLING_ACCOUNT_ID=""
-export BUCKET_NAME=tf-state-bkup
+export project_id=""
+export region="europe-west3"
+export billing_account_id=""
+export terraform_bucket_name=tf-state-bkup
 
 # Link Billing Account
-gcloud beta billing projects link ${TF_PROJECT_ID} \
-  --billing-account ${TF_BILLING_ACCOUNT_ID}
+gcloud beta billing projects link ${project_id} \
+  --billing-account ${billing_account_id}
 
 # Create Remote Bucket to keep `terraform.tfstate` shareable and in sync
 gsutil mb \
-    -p ${TF_PROJECT_ID} \
-    -l ${TF_REGION} \
-    gs://${BUCKET_NAME}-${TF_PROJECT_ID}
+    -p ${project_id} \
+    -l ${region} \
+    gs://${terraform_bucket_name}-${project_id}
 
 # Create `backend.tf` configuration file
 cat > backend.tf <<-EOF
@@ -24,14 +24,14 @@ terraform {
   # Store Terraform state and the history of all revisions remotely, and protect that state with locks to prevent corruption.
   backend "gcs" {
     # The name of the Google Cloud Storage (GCS) bucket
-    bucket  = "${BUCKET_NAME}-${TF_PROJECT_ID}"
-    credentials = "credentials.json"
+    bucket  = "${terraform_bucket_name}-${project_id}"
+    credentials = "./creds/serviceaccount.json"
   }
 }
 EOF
 
 # Enable versioning for the Remote Bucket
-gsutil versioning set on gs://${BUCKET_NAME}-${TF_PROJECT_ID}
+gsutil versioning set on gs://${terraform_bucket_name}-${project_id}
 
 terraform init
 
