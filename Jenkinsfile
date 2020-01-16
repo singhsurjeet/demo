@@ -1,8 +1,6 @@
 pipeline {
 
 
-def GCP_PROJECT_ID=''
-
     agent {
         kubernetes {
           label "demo-${UUID.randomUUID().toString()}"
@@ -48,6 +46,11 @@ def GCP_PROJECT_ID=''
         buildDiscarder(logRotator(numToKeepStr:'1'))
         disableConcurrentBuilds()
     }
+    parameters {
+            string(name: 'project_id', defaultValue: 'demo', description: GCP project ID')
+            string(name: 'region', defaultValue: 'europe-west3', description: GCP region')
+            string(name: 'billing_account_id', defaultValue: 'demo', description: GCP project billing ID')
+        }
 
     environment {
         SVC_ACCOUNT_KEY = credentials('terraform-auth')
@@ -59,11 +62,12 @@ def GCP_PROJECT_ID=''
                 steps {
                     script {
                     container('docker') {
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', passwordVariable: 'docker_pass', usernameVariable: 'docker_user')]){
                         dir('docker_flask') {
-                            def commitLabel =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                            sh "docker build -t gcr.io/${GCP_PROJECT_ID}/docker-flask:${commitLabel} ."
-                            sh "docker push gcr.io/${GCP_PROJECT_ID}/docker-flask:${commitlabel}"
+                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:demo-gcr-creds') {
+                            def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+                             app = docker.build("${project_id}/docker-flask"
+                             app.push("${commit_id}")
+                             app.push("latest")
                         }
                       }
                     }
@@ -116,12 +120,14 @@ def GCP_PROJECT_ID=''
                     dir('terraform_landscape') {
                         unstash 'terraformplan'
                         sh "terraform apply -input=false myplan"
-                        sh "sleep 30"
+                        sh "sleep 60"
                     }
                 }
             }
         }
         }
+
+        Stage("APPLY
 
 
         stage("GENERATE DESTROY PLAN") {
