@@ -98,7 +98,7 @@ pipeline {
                         sh 'mkdir -p creds'
                         sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
                         sh "./init.sh -var project_id="${var.project_id}" -var region="${var.region}" -var billing_account_id}="${var.billing_account_id}
-                        sh "terraform plan -var project_id="${var.project_id}" -var region="${var.region}" -var location="${var.region}-a -out myplan"
+                        sh "terraform plan -var project_id=${var.project_id} -var region=${var.region} -var location=${var.region}-a -out myplan "
                         stash name: 'terraformplan' , includes: 'myplan'
                     }
                 }
