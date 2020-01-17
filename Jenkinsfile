@@ -69,6 +69,7 @@ pipeline {
                     }
                   }
                 }
+    }
 
         stage("TERRAFORM_VALIDATE") {
             steps {
