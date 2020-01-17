@@ -83,7 +83,6 @@ pipeline {
               }
             }
           } 
-        }
 
         stage("TF INITIATE & PLAN") {
             steps {
