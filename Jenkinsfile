@@ -79,7 +79,6 @@ pipeline {
                         sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
                         // sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
                         // sh "docker push gcr.io/${PROJECT_ID}/docker-flask:${commit_id}"
-                        // sh "docker push gcr.io/${PROJECT_ID}/docker-flask:latest"
                     }
                   }
                }
