@@ -52,7 +52,7 @@ pipeline {
                     script {
                     container('docker') {
                         dir('docker_flask') {
-                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:demo-terraform') {
+                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:[demo-terraform]') {
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                              app = docker.build("docker-flask:${commit_id}")
                              app.push("${commit_id}")
