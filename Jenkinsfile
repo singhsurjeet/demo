@@ -45,10 +45,6 @@ pipeline {
             string(name: 'billing_account_id', defaultValue: 'demo', description: 'GCP project billing ID')
         }
 
-    environment {
-        SVC_ACCOUNT_KEY = credentials('terraform-auth')
-      }
-
     stages {
 
     stage("BUILD") {
@@ -56,7 +52,7 @@ pipeline {
                     script {
                     container('docker') {
                         dir('docker_flask') {
-                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:demo-gcr-creds') {
+                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:demo-terraform') {
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                              app = docker.build("docker-flask:${commit_id}")
                              app.push("${commit_id}")
@@ -73,14 +69,16 @@ pipeline {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
-                        sh 'mkdir -p creds'
-                        sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
+                        withCredentials([file(credentialsId: 'demo-terraform', variable: 'GOOGLE_CREDENTIALS')]) {
+                        //sh 'mkdir -p creds'
+                       // sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
                         sh "terraform init"
                         sh "terraform validate -check-variables=true"
                     }
                 }
               }
             }
+          } 
         }
 
         stage("TF INITIATE & PLAN") {
@@ -89,7 +87,7 @@ pipeline {
                 container('tools'){
                     dir('terraform_landscape') {
                         sh 'mkdir -p creds'
-                        sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
+                        sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
                         sh "./init.sh -var project_id="${var.project_id}" -var region="${var.region}" -var billing_account_id}="${var.billing_account_id}
                         sh "terraform plan -var project_id=${var.project_id} -var region=${var.region} -var location=${var.region}-a -out myplan "
                         stash name: 'terraformplan' , includes: 'myplan'
