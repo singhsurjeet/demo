@@ -30,6 +30,14 @@ pipeline {
         command:
         - cat
         tty: true
+        volumeMounts:
+        - name: dockersock
+          mountPath: /var/run/docker.sock
+      volumes:
+      - name: dockersock
+        hostPath:
+          path: /var/run/docker.sock
+    
 
     """
         }
@@ -59,7 +67,7 @@ pipeline {
                             //sh 'mkdir -p creds'
                             //sh "echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json"
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                            sh "docker login -u _json_key --password-stdin ${GC_SVC_KEY} https://gcr.io"
+                            sh "docker login -u _json_key -p $GC_SVC_KEY https://gcr.io"
                             sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
                             sh "docker push gcr.io/${PROJECT_ID}/docker-flask:${commit_id}"
                             sh "docker push gcr.io/${PROJECT_ID}/docker-flask:latest"
@@ -76,8 +84,9 @@ pipeline {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
-                        sh 'mkdir -p creds'
-                        sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
+                        withCredentials([file(credentialsId: 'terraform-auth', variable: 'GC_SVC_KEY')]) {
+                        // sh 'mkdir -p creds'
+                        // sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
                         sh "terraform init"
                         sh "terraform validate -check-variables=true"
                     }
