@@ -90,6 +90,7 @@ pipeline {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
+                        withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh-key', keyFileVariable: 'key_path', passphraseVariable: 'pass', usernameVariable: 'user')]) {
                         unstash 'creds'
                         sh "terraform init"
                         sh "terraform validate -check-variables=true"
@@ -97,7 +98,8 @@ pipeline {
                 }
               }
             }
-          } 
+          }
+        }
     
 
         stage("TF INITIATE & PLAN") {
