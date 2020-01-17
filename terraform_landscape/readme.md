@@ -31,7 +31,7 @@ Now tag the flask image build earlier to push it to gcr.
 Alternatively, the source image is already built and uploaded here: `surjeet112/docker-flask:latest`
 
 Then, simply pull and tag:
-
+  
 ```
 docker pull surjeet112/docker-flask:latest
 docker tag surjeet112/docker_flask:latest "gcr.io/${PROJECT_ID}/docker-flask:v1"

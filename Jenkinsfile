@@ -44,6 +44,9 @@ pipeline {
             string(name: 'region', defaultValue: 'europe-west3', description: 'GCP region')
             string(name: 'billing_account_id', defaultValue: '0114AF-A8061F-7F222A', description: 'GCP project billing ID')
         }
+    environment {
+        SVC_ACCOUNT_KEY = credentials('terraform-auth')
+    }
 
     stages {
 
@@ -52,11 +55,14 @@ pipeline {
                     script {
                     container('docker') {
                         dir('docker_flask') {
-                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:[demo-terraform]') {
+                            sh 'mkdir -p creds'
+                            sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                             app = docker.build("docker-flask:${commit_id}")
-                             app.push("${commit_id}")
-                             app.push("latest")
+                            sh 'docker login -u _json_key --password-stdin https://gcr.io < ./creds/serviceaccount.json'
+                            sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
+                            sh "docker push gcr.io/${PROJECT_ID}/docker-flask:${commit_id}"
+                            sh "docker push gcr.io/${PROJECT_ID}/docker-flask:latest"
+                            
                         }
                       }
                     }
