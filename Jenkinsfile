@@ -44,9 +44,9 @@ pipeline {
             string(name: 'region', defaultValue: 'europe-west3', description: 'GCP region')
             string(name: 'billing_account_id', defaultValue: '0114AF-A8061F-7F222A', description: 'GCP project billing ID')
         }
-    // environment {
-    //     SVC_ACCOUNT_KEY = credentials('terraform-auth')
-    // }
+    environment {
+        SVC_ACCOUNT_KEY = credentials('terraform-auth')
+    }
 
     stages {
 
