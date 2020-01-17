@@ -16,7 +16,7 @@ pipeline {
       containers:
       - name: jnlp
         image: surjeet112/jnlp-slave:3.23-1-alpine
-        imagePullPolicy: always
+        imagePullPolicy: Always
         ttyEnabled: true
       - name: tools
         image: surjeet112/gcloud-tf-helm:latest
