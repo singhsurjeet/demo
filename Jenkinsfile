@@ -64,9 +64,9 @@ pipeline {
                     container('docker') {
                         dir('docker_flask') {
                             withCredentials([file(credentialsId: 'terraform-auth', variable: 'GCP_SVC_KEY')]) {
-                            //sh "echo  > ./serviceaccount.json"
+                            sh "echo ${GCP_SVC_KEY} > serviceaccount.json"
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                            sh "docker login -u _json_key -p ${GCP_SVC_KEY} https://gcr.io"
+                            sh 'docker login -u _json_key -p "$(cat serviceaccount)" https://gcr.io'
                             sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
                             sh "docker push gcr.io/${PROJECT_ID}/docker-flask:${commit_id}"
                             sh "docker push gcr.io/${PROJECT_ID}/docker-flask:latest"
