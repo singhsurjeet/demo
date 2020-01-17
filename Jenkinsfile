@@ -134,6 +134,10 @@ pipeline {
                     sh "gcloud container clusters get-credentials demo-private-cluster --zone ${region}-a --project ${project_id}"
                     sh "kubectl create deployment docker-flask-deploy --image=gcr.io/${project_id}/docker-flask:${commit_id}"
                     sh "kubectl expose deployment docker-flask-deploy --type=LoadBalancer --port 80 --target-port 5000"
+                    }
+                  }
+                }
+              }
 
 
 
@@ -168,6 +172,5 @@ pipeline {
             }
         }
     }
-}
 }
 }
