@@ -15,10 +15,6 @@ pipeline {
       securityContext:
         runAsUser: 0
       containers:
-      - name: jnlp
-        image: jenkins/jnlp-slave
-        imagePullPolicy: IfNotPresent
-        ttyEnabled: true
       - name: tools
         image: surjeet112/gcloud-tf-helm:latest
         imagePullPolicy: IfNotPresent
@@ -31,13 +27,7 @@ pipeline {
         command:
         - cat
         tty: true
-        volumeMounts:
-        - name: dockersock
-          mountPath: /var/run/docker.sock
-      volumes:
-      - name: dockersock
-        hostPath:
-          path: /var/run/docker.sock
+
     """
         }
     }
