@@ -127,7 +127,7 @@ pipeline {
         }
         }
 
-        Stage("DEPLOY APP"){
+        stage("DEPLOY APP"){
                 steps {
                   script {
                     container('kube'){
