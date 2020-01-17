@@ -14,6 +14,10 @@ pipeline {
       securityContext:
         runAsUser: 0
       containers:
+      - name: jnlp
+        image: surjeet112/jnlp-slave:3.23-1-alpine
+        imagePullPolicy: IfNotPresent
+        ttyEnabled: true
       - name: tools
         image: surjeet112/gcloud-tf-helm:latest
         imagePullPolicy: IfNotPresent
