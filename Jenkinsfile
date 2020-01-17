@@ -59,7 +59,7 @@ pipeline {
                             //sh 'mkdir -p creds'
                             //sh "echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json"
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                            sh "echo $GC_SVC_KEY | docker login -u _json_key --password-stdin https://gcr.io"
+                            sh "docker login -u _json_key --password-stdin ${GC_SVC_KEY} https://gcr.io"
                             sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
                             sh "docker push gcr.io/${PROJECT_ID}/docker-flask:${commit_id}"
                             sh "docker push gcr.io/${PROJECT_ID}/docker-flask:latest"
