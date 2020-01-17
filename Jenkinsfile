@@ -19,8 +19,8 @@ pipeline {
         image: surjeet112/jnlp-slave:3.23-1-alpine
         imagePullPolicy: IfNotPresent
         ttyEnabled: true
-      - name: terraform
-        image: surjeet112/terraform:0.20
+      - name: tools
+        image: surjeet112/gcloud-tf-helm:latest
         imagePullPolicy: IfNotPresent
         command:
         - cat
@@ -47,9 +47,9 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
-            string(name: 'project_id', defaultValue: 'demo', description: GCP project ID')
-            string(name: 'region', defaultValue: 'europe-west3', description: GCP region')
-            string(name: 'billing_account_id', defaultValue: 'demo', description: GCP project billing ID')
+            string(name: 'project_id', defaultValue: 'demo', description: 'GCP project ID')
+            string(name: 'region', defaultValue: 'europe-west3', description: 'GCP region')
+            string(name: 'billing_account_id', defaultValue: 'demo', description: 'GCP project billing ID')
         }
 
     environment {
