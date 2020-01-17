@@ -4,7 +4,6 @@ pipeline {
     agent {
         kubernetes {
           label "demo-${UUID.randomUUID().toString()}"
-          defaultContainer 'jnlp'
           yaml """
     apiVersion: v1
     kind: Pod
