@@ -56,7 +56,7 @@ pipeline {
                     container('docker') {
                         dir('docker_flask') {
                             sh 'mkdir -p creds'
-                            sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
+                            sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
                             def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                             sh 'docker login -u _json_key --password-stdin https://gcr.io < ./creds/serviceaccount.json'
                             sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
@@ -74,9 +74,8 @@ pipeline {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
-                        withCredentials([file(credentialsId: 'demo-terraform', variable: 'GOOGLE_CREDENTIALS')]) {
-                        //sh 'mkdir -p creds'
-                       // sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
+                        sh 'mkdir -p creds'
+                        sh 'echo $SVC_ACCOUNT_KEY > ./creds/serviceaccount.json'
                         sh "terraform init"
                         sh "terraform validate -check-variables=true"
                     }
