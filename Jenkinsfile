@@ -78,7 +78,7 @@ pipeline {
         stage("TERRAFORM_VALIDATE") {
             steps {
                 script {
-                container('terrafom'){
+                container('tools'){
                     dir('terraform_landscape') {
                         sh 'mkdir -p creds'
                         sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
@@ -93,7 +93,7 @@ pipeline {
         stage("TF INITIATE & PLAN") {
             steps {
                 script {
-                container('terraform'){
+                container('tools'){
                     dir('terraform_landscape') {
                         sh 'mkdir -p creds'
                         sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
@@ -116,7 +116,7 @@ pipeline {
         stage("APPLY") {
             steps {
                 script {
-                container('terraform'){
+                container('tools'){
                     dir('terraform_landscape') {
                         unstash 'terraformplan'
                         sh "terraform apply -input=false myplan"
@@ -130,7 +130,7 @@ pipeline {
         stage("DEPLOY APP"){
                 steps {
                   script {
-                    container('kube'){
+                    container('tools'){
                     sh "gcloud container clusters get-credentials demo-private-cluster --zone ${region}-a --project ${project_id}"
                     sh "kubectl create deployment docker-flask-deploy --image=gcr.io/${project_id}/docker-flask:${commit_id}"
                     sh "kubectl expose deployment docker-flask-deploy --type=LoadBalancer --port 80 --target-port 5000"
@@ -144,7 +144,7 @@ pipeline {
         stage("GENERATE DESTROY PLAN") {
             steps {
                 script {
-                container('terraform'){
+                container('tools'){
                     dir('terraform') {
                         sh "terraform -destroy"
                     }
@@ -163,7 +163,7 @@ pipeline {
         stage("DESTROYING NOW") {
             steps {
                 script {
-                container('terraform'){
+                container('tools'){
                     dir('terraform') {
                         sh "terraform init"
                         sh "terraform destroy -force"
