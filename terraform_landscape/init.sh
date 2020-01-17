@@ -25,7 +25,7 @@ terraform {
   backend "gcs" {
     # The name of the Google Cloud Storage (GCS) bucket
     bucket  = "${terraform_bucket_name}-${project_id}"
-    credentials = "./creds/serviceaccount.json"
+    credentials = "./credentials.json"
   }
 }
 EOF
