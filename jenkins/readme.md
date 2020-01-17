@@ -25,6 +25,10 @@ Copy the entire string and paste it into the Secret box, then click OK.
 
 Plus, follow this for configuring access to GCR repo. [guide](https://medium.com/google-cloud/how-to-push-docker-image-to-google-container-registry-gcr-through-jenkins-job-52b9d5ce9f7f) on how to push images to GCR from jenkins.
 
+Please make sure that you have configured the kubernetes cloud in your jenkins config.
+
+![](images/k8scloud.png)
+
 Once done, you can now simply go-ahead and create a new multi branch pipeline project and cofigure your git repository after adding your ssh key in credentials.
 [Guide](https://github.com/gitbucket/gitbucket/wiki/Setup-Jenkins-Multibranch-Pipeline-and-Organization)
 
