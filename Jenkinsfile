@@ -16,7 +16,7 @@ pipeline {
         runAsUser: 0
       containers:
       - name: jnlp
-        image: surjeet112/jnlp-slave:3.23-1-alpine
+        image: jenkins/jnlp-slave
         imagePullPolicy: IfNotPresent
         ttyEnabled: true
       - name: tools
