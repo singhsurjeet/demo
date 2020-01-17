@@ -16,7 +16,7 @@ pipeline {
       containers:
       - name: jnlp
         image: surjeet112/jnlp-slave:3.23-1-alpine
-        imagePullPolicy: Always
+        imagePullPolicy: IfNotPresent
         ttyEnabled: true
       - name: tools
         image: surjeet112/gcloud-tf-helm:latest
@@ -25,7 +25,7 @@ pipeline {
         - cat
         tty: true
       - name: docker
-        image: surjeet112/docker:17.03.2-ce-rc1-dind
+        image: surjeet112/docker:17.03.2-ce-rc1-dind-git
         imagePullPolicy: IfNotPresent
         command:
         - cat
@@ -50,7 +50,7 @@ pipeline {
 
     stages {
 
-    stage("BUILD") {
+    stage("BUILD & PUBLISH") {
                 steps {
                     script {
                     container('docker') {
