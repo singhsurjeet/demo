@@ -96,7 +96,7 @@ pipeline {
                         sshagent(['github-ssh-key']){
                             unstash 'creds'
                             sh "terraform init --input=false"
-                            sh "terraform validate -check-variables=true"
+                            sh "terraform validate"
                         }
                     }
                 }
