@@ -177,10 +177,12 @@ pipeline {
             steps {
                 script {
                 container('tools'){
-                    dir('terraform') {
+                    dir('terraform_landscape') {
+                      sshagent(['github-ssh-key']){
                         unstash 'creds'
                         sh "terraform init"
-                        sh "terraform destroy"
+                        sh "terraform plan -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -out myplan -destroy"
+                       }
                     }
                 }
             }
@@ -198,14 +200,16 @@ pipeline {
             steps {
                 script {
                 container('tools'){
-                    dir('terraform') {
+                    dir('terraform_landscape') {
+                      sshagent(['github-ssh-key']){
                         unstash 'creds'
                         sh "terraform init"
-                        sh "terraform destroy -force"
+                        sh "terraform destroy -auto-approve"
+                        }   
                     }
                 }
             }
         }
-    }
+        }
 }
 }
