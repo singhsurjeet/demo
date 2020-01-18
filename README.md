@@ -1,4 +1,6 @@
 
+![](https://github.com/singhsurjeet/jenkins-terraform-gke-flask/blob/develop/images/jenkins-tf-gke.png)
+
 ## Instructions Manual:
 
 1. [Build Flask docker API](docker_flask/readme.md).
