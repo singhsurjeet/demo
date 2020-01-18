@@ -31,7 +31,7 @@ Now tag the flask image build earlier to push it to gcr.
 Alternatively, the source image is already built and uploaded here: `surjeet112/docker-flask:latest`
 
 Then, simply pull and tag:
-  
+
 ```
 docker pull surjeet112/docker-flask:latest
 docker tag surjeet112/docker_flask:latest "gcr.io/${PROJECT_ID}/docker-flask:v1"
@@ -50,8 +50,9 @@ gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable compute.googleapis.com
 gcloud services enable container.googleapis.com
 gcloud services enable iam.googleapis.com
+gcloud services enable cloudbilling.googleapis.com
 ```
-Make sure that you have minimum 0.12 version of terraform installed.
+Make sure that you have minimum 0.12.19 version of terraform installed.
 
 Create a service account for terraform to provision the infrastructure.
 ```

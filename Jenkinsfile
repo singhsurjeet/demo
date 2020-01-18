@@ -80,8 +80,8 @@ pipeline {
                         unstash 'creds'
                         def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                         //sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
-                        // sh "docker build -t gcr.io/${PROJECT_ID}/docker-flask:${commit_id} ."
-                        // sh "docker push gcr.io/${PROJECT_ID}/docker-flask:${commit_id}"
+                        // sh "docker build -t gcr.io/${project_id}/docker-flask:${commit_id} ."
+                        // sh "docker push gcr.io/${project_id}/docker-flask:${commit_id}"
                     }
                   }
                }
@@ -113,7 +113,7 @@ pipeline {
                         sshagent(['github-ssh-key']){
                             unstash 'creds'
                             sh "./init.sh ${env.project_id} ${env.region} ${env.billing_account_id}"
-                            sh "terraform plan -var 'project_id=${var.project_id}' -var 'region=${var.region}' -var 'location=${var.region}-a' -out myplan "
+                            sh "terraform plan -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -out myplan"
                             stash name: 'terraformplan' , includes: 'myplan'
                             }
                         }

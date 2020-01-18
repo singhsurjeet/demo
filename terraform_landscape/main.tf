@@ -1,6 +1,6 @@
 terraform {
   # The modules used in this guide require Terraform 0.12, additionally we depend on a bug fixed in version 0.12.7.
-  required_version = ">= 0.12.7"
+  required_version = ">= 0.12.19"
 }
 
 provider "google" {
