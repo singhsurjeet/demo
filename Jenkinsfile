@@ -105,14 +105,14 @@ pipeline {
         }
     
 
-        stage("TF INITIATE & PLAN") {
+        stage("TERRAFORM_PLAN") {
             steps {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
                         sshagent(['github-ssh-key']){
                             unstash 'creds'
-                            sh "./init.sh -var project_id=${var.project_id} -var region=${var.region} -var billing_account_id=${var.billing_account_id}"
+                            sh "./init.sh ${var.project_id} ${var.region} ${var.billing_account_id}"
                             sh "terraform plan -var project_id=${var.project_id} -var region=${var.region} -var location=${var.region}-a -out myplan "
                             stash name: 'terraformplan' , includes: 'myplan'
                             }

@@ -1,8 +1,8 @@
 #!/usr/bin/env bash
 
-export project_id=""
-export region="europe-west3"
-export billing_account_id=""
+export project_id="$1"
+export region="$2"
+export billing_account_id="$3"
 export terraform_bucket_name=tf-state-bkup
 
 # Link Billing Account
