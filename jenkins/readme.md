@@ -16,7 +16,7 @@ helm init
 helm install --name jenkins-demo stable/jenkins
 ```
 
-Incase, If you already have the jenkins instance up and running. Go head and configure the credentials for Docker repository and GCP service account.
+Incase, If you already have the jenkins instance up and running. Go head and configure the credentials for GIT-SSH-KEY and GCP service account.
 Makes sure that you have all jenkins plugins pre-installed. You can also specify this in the values.yml file of your helm chart.
 ```
 kubernetes:1.2
