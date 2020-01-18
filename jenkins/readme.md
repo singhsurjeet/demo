@@ -11,7 +11,10 @@ Alternatively, you can deploy the jenkins on you local minikube or docker-deskto
 
 Run the helm command locally and follow the instructions to login to your jenkins box
 
-`helm install --name my-release stable/jenkins`
+```
+helm init
+helm install --name jenkins-demo stable/jenkins
+```
 
 Incase, If you already have the jenkins instance up and running. Go head and configure the credentials for Docker repository and GCP service account.
 Makes sure that you have all jenkins plugins pre-installed. You can also specify this in the values.yml file of your helm chart.
