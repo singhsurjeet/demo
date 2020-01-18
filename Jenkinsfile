@@ -138,7 +138,7 @@ pipeline {
                         unstash 'creds'
                         unstash 'terraformplan'
                         sh "terraform apply -input=false myplan"
-                        sh "sleep 60"
+                        sh "sleep 30"
                        }
                     }
                 }
