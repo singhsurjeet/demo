@@ -105,7 +105,7 @@ pipeline {
         // }
     
 
-        stage("TERRAFORM_PLAN") {
+        stage("TF_PLAN") {
             steps {
                 script {
                 container('tools'){
@@ -122,7 +122,7 @@ pipeline {
             }
         }
 
-        stage("APPROVE PLAN") {
+        stage("TF_APPROVE") {
             steps {
                 timeout(time: 30, unit: 'MINUTES') {
                     input 'Do you want to apply the plan?'
@@ -130,7 +130,7 @@ pipeline {
             }
         }
 
-        stage("APPLY") {
+        stage("TF_APPLY") {
             steps {
                 script {
                 container('tools'){
