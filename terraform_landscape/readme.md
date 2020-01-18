@@ -133,3 +133,25 @@ Next, to destroy the GKE cluster, run the terraform destroy command:
 
 Further, you may want to delete the bucket and service account created for storing terraform plan.
 
+Alternatively `helm' can be use to deploy and upgrade deployment to cluster.
+
+### Make sure to install helm tiller on the cluster once provisioned before running any helm commands
+
+```kubectl --namespace kube-system create sa tiller
+# create a cluster role binding for tiller
+kubectl create clusterrolebinding tiller \
+    --clusterrole cluster-admin \
+    --serviceaccount=kube-system:tiller
+```
+echo "initialize helm"
+# initialized helm within the tiller service account
+`helm init --service-account tiller`
+# updates the repos for Helm repo integration
+`helm repo update`
+
+echo "verify helm"
+# verify that helm is installed in the cluster
+`kubectl get deploy,svc tiller-deploy -n kube-system`
+
+
+
