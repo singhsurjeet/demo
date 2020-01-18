@@ -7,7 +7,7 @@ export terraform_bucket_name=tf-state-bkup
 
 # Link Billing Account
 gcloud beta billing projects link ${project_id} \
-  --billing-account ${billing_account_id}
+  --billing-account ${billing_account_id} --quiet
 
 # Create Remote Bucket to keep `terraform.tfstate` shareable and in sync
 gsutil mb \
@@ -33,5 +33,5 @@ EOF
 # Enable versioning for the Remote Bucket
 gsutil versioning set on gs://${terraform_bucket_name}-${project_id}
 
-terraform init
+terraform init --input=false
 
