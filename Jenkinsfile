@@ -53,6 +53,7 @@ pipeline {
             string(name: 'billing_account_id', defaultValue: '0114AF-A8061F-7F222A', description: 'GCP project billing ID')
         }
     environment{
+            commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
             GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
         }
 
@@ -78,7 +79,6 @@ pipeline {
                     container('docker') {
                         dir('docker_flask') {
                         unstash 'creds'
-                        def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
                         sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
                         sh "docker build -t gcr.io/${project_id}/docker-flask:${commit_id} ."
                         sh "docker push gcr.io/${project_id}/docker-flask:${commit_id}"
@@ -88,7 +88,7 @@ pipeline {
             }
         }
 
-        stage("TERRAFORM_VALIDATE") {
+        stage("TF_VALIDATE") {
             steps {
                 script {
                 container('tools'){
