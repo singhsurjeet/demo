@@ -88,21 +88,21 @@ pipeline {
             }
         }
 
-        stage("TERRAFORM_VALIDATE") {
-            steps {
-                script {
-                container('tools'){
-                    dir('terraform_landscape') {
-                        sshagent(['github-ssh-key']){
-                            unstash 'creds'
-                            sh "terraform init -backend=false"
-                            sh "terraform validate"
-                        }
-                    }
-                }
-             }
-          }
-        }
+        // stage("TERRAFORM_VALIDATE") {
+        //     steps {
+        //         script {
+        //         container('tools'){
+        //             dir('terraform_landscape') {
+        //                 sshagent(['github-ssh-key']){
+        //                     unstash 'creds'
+        //                     sh "terraform init -backend=false"
+        //                     sh "terraform validate"
+        //                 }
+        //             }
+        //         }
+        //      }
+        //   }
+        // }
     
 
         stage("TERRAFORM_PLAN") {
@@ -112,7 +112,7 @@ pipeline {
                     dir('terraform_landscape') {
                         sshagent(['github-ssh-key']){
                             unstash 'creds'
-                            sh "./init.sh ${var.project_id} ${var.region} ${var.billing_account_id}"
+                            sh "./init.sh ${env.project_id} ${env.region} ${env.billing_account_id}"
                             sh "terraform plan -var project_id=${var.project_id} -var region=${var.region} -var location=${var.region}-a -out myplan "
                             stash name: 'terraformplan' , includes: 'myplan'
                             }
