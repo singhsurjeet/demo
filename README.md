@@ -17,7 +17,7 @@ Make sure to follow some of the intiial guidelines in step 2 to setup your GCP a
 
 ![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture3.png)
 
-- Once approved, pipeline will provision the GCP and GKE infrastrcuture and deploy the HELM chart
+- Once approved, pipeline will provision the GCP and GKE infrastrcuture and deploy the application HELM chart
 
 ![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture4.png)
 
