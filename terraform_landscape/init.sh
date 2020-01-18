@@ -5,6 +5,8 @@ export region="$2"
 export billing_account_id="$3"
 export terraform_bucket_name=tf-state-bkup
 
+gcloud auth activate-service-account --key-file=./credentials.json
+
 # Link Billing Account
 gcloud beta billing projects link ${project_id} \
   --billing-account ${billing_account_id} --quiet
