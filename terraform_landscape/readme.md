@@ -118,6 +118,31 @@ App should now be available over EXTERNAL-IP
 
 `open http://EXTERNAL-IP`
 
+Alternativey, you can use `helm charts` to manage your deployments. Make sure to install the tiller on GCP or local cluster before running any helm commands for the first time.
+
+- Install helm tiller on the GCP cluster once provisioned before running any helm commands
+
+```kubectl --namespace kube-system create sa tiller
+# create a cluster role binding for tiller
+kubectl create clusterrolebinding tiller \
+    --clusterrole cluster-admin \
+    --serviceaccount=kube-system:tiller
+```
+echo "initialize helm"
+- Initialized helm within the tiller service account
+`helm init --service-account tiller`
+- Updates the repos for Helm repo integration
+`helm repo update`
+
+echo "verify helm"
+
+- verify that helm is installed in the cluster
+`kubectl get deploy,svc tiller-deploy -n kube-system`
+
+```
+helm init --client-only --skip-refresh
+helm upgrade --install --wait docker-flask ./docker-flask --set image.tag="${commit_id}" --set project_id="${project_id}"
+```
 
 ## Cleaning Up
 
@@ -135,23 +160,7 @@ Further, you may want to delete the bucket and service account created for stori
 
 Alternatively `helm' can be use to deploy and upgrade deployment to cluster.
 
-### Make sure to install helm tiller on the cluster once provisioned before running any helm commands
 
-```kubectl --namespace kube-system create sa tiller
-# create a cluster role binding for tiller
-kubectl create clusterrolebinding tiller \
-    --clusterrole cluster-admin \
-    --serviceaccount=kube-system:tiller
-```
-echo "initialize helm"
-# initialized helm within the tiller service account
-`helm init --service-account tiller`
-# updates the repos for Helm repo integration
-`helm repo update`
-
-echo "verify helm"
-# verify that helm is installed in the cluster
-`kubectl get deploy,svc tiller-deploy -n kube-system`
 
 
 
