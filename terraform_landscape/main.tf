@@ -1,22 +1,22 @@
 terraform {
   # The modules used in this guide require Terraform 0.12, additionally we depend on a bug fixed in version 0.12.7.
-  required_version = ">= 0.12.7"
+  required_version = ">= 0.12.19"
 }
 
 provider "google" {
-  credentials = file("./creds/serviceaccount.json")
-  version = "~> 2.9.0"
-  project = var.project_id
-  region  = var.region
-  zone    = var.location
+  credentials = file("./credentials.json")
+  version     = "~> 2.9.0"
+  project     = var.project_id
+  region      = var.region
+  zone        = var.location
 }
 
 provider "google-beta" {
-  credentials = file("./creds/serviceaccount.json")
-  version = "~> 2.9.0"
-  project = var.project_id
-  region  = var.region
-  zone    = var.location
+  credentials = file("./credentials.json")
+  version     = "~> 2.9.0"
+  project     = var.project_id
+  region      = var.region
+  zone        = var.location
 }
 //resource "google_service_account" "myaccount" {
 //account_id   = "terraform-demo-svc-accnt"

@@ -4,7 +4,6 @@ pipeline {
     agent {
         kubernetes {
           label "demo-${UUID.randomUUID().toString()}"
-          defaultContainer 'jnlp'
           yaml """
     apiVersion: v1
     kind: Pod
@@ -26,7 +25,7 @@ pipeline {
         - cat
         tty: true
       - name: docker
-        image: surjeet112/docker:17.03.2-ce-rc1-dind
+        image: surjeet112/docker:17.03.2-ce-rc1-dind-git
         imagePullPolicy: IfNotPresent
         command:
         - cat
@@ -38,6 +37,8 @@ pipeline {
       - name: dockersock
         hostPath:
           path: /var/run/docker.sock
+    
+
     """
         }
     }
@@ -47,65 +48,81 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
-            string(name: 'project_id', defaultValue: 'demo', description: 'GCP project ID')
+            string(name: 'project_id', defaultValue: '', description: 'GCP project ID')
             string(name: 'region', defaultValue: 'europe-west3', description: 'GCP region')
-            string(name: 'billing_account_id', defaultValue: 'demo', description: 'GCP project billing ID')
+            string(name: 'billing_account_id', defaultValue: '', description: 'GCP project billing ID')
         }
-
-    environment {
-        SVC_ACCOUNT_KEY = credentials('terraform-auth')
-      }
+    environment{
+            commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        }
 
     stages {
 
-    stage("BUILD") {
-                steps {
-                    script {
-                    container('docker') {
-                        dir('docker_flask') {
-                        docker.withRegistry("https://gcr.io/${project_id}/", 'gcr:demo-gcr-creds') {
-                            def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                             app = docker.build("docker-flask:${commit_id}")
-                             app.push("${commit_id}")
-                             app.push("latest")
-                        }
-                      }
-                    }
-                  }
-                }
-              }
-
-        stage("TERRAFORM_VALIDATE") {
+        stage("GET CREDS") {
             steps {
                 script {
-                container('terrafom'){
-                    dir('terraform_landscape') {
-                        sh 'mkdir -p creds'
-                        sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
-                        sh "terraform init"
-                        sh "terraform validate -check-variables=true"
+                    container('docker') {
+                        withCredentials([string(credentialsId: 'terraform-auth', variable: 'GCP_SVC_KEY')]) {
+                        sh "echo ${GCP_SVC_KEY} > en_creds.json"
+                        sh "base64 -d en_creds.json > credentials.json"
+                        stash name: "creds", includes: "credentials.json"
+                        }
                     }
                 }
-              }
+            }
+        }
+        
+        stage("BUILD & PUBLISH") {
+            steps {
+                script {
+                    container('docker') {
+                        dir('docker_flask') {
+                        unstash 'creds'
+                        sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
+                        sh "docker build -t gcr.io/${project_id}/docker-flask:${commit_id} ."
+                        sh "docker push gcr.io/${project_id}/docker-flask:${commit_id}"
+                    }
+                  }
+               }
             }
         }
 
-        stage("TF INITIATE & PLAN") {
+        stage("TF_VALIDATE") {
             steps {
                 script {
-                container('terraform'){
+                container('tools'){
                     dir('terraform_landscape') {
-                        sh 'mkdir -p creds'
-                        sh 'echo $SVC_ACCOUNT_KEY | base64 -d > ./creds/serviceaccount.json'
-                        sh "./init.sh -var project_id="${var.project_id}" -var region="${var.region}" -var billing_account_id}="${var.billing_account_id}
-                        sh "terraform plan -var project_id="${var.project_id}" -var region="${var.region}" -var location="${var.region}-a -out myplan"
-                        stash name: 'terraformplan' , includes: 'myplan'
+                        sshagent(['github-ssh-key']){
+                            unstash 'creds'
+                            sh "terraform init -backend=false"
+                            sh "terraform validate"
+                        }
                     }
                 }
-              }
+             }
           }
         }
-        stage("APPROVE PLAN") {
+    
+
+        stage("TF_PLAN") {
+            steps {
+                script {
+                container('tools'){
+                    dir('terraform_landscape') {
+                        sshagent(['github-ssh-key']){
+                            unstash 'creds'
+                            sh "./init.sh ${project_id} ${region} ${billing_account_id}"
+                            sh "terraform plan -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -out myplan"
+                            stash name: 'terraformplan' , includes: 'myplan'
+                            }
+                        }
+                    }
+                }  
+            }
+        }
+
+        stage("TF_APPROVE") {
             steps {
                 timeout(time: 30, unit: 'MINUTES') {
                     input 'Do you want to apply the plan?'
@@ -113,36 +130,60 @@ pipeline {
             }
         }
 
-        stage("APPLY") {
+        stage("TF_APPLY") {
             steps {
                 script {
-                container('terraform'){
+                container('tools'){
                     dir('terraform_landscape') {
+                        unstash 'creds'
                         unstash 'terraformplan'
                         sh "terraform apply -input=false myplan"
-                        sh "sleep 60"
+                        sh "sleep 30"
+                       }
                     }
                 }
             }
         }
-        }
 
-        Stage("DEPLOY APP"){
+
+        stage("DEPLOY APP"){
                 steps {
                   script {
-                    container('kube'){
+                    container('tools'){
+                    dir('helm') {
+                    unstash 'creds'
+                    sh 'gcloud auth activate-service-account --key-file=credentials.json'
                     sh "gcloud container clusters get-credentials demo-private-cluster --zone ${region}-a --project ${project_id}"
-                    sh "kubectl create deployment docker-flask-deploy --image=gcr.io/${project_id}/docker-flask:${commit_id}"
-                    sh "kubectl expose deployment docker-flask-deploy --type=LoadBalancer --port 80 --target-port 5000"
+                    sh("helm init --client-only --skip-refresh")
+                    sh('helm upgrade --install --wait docker-flask ./docker-flask --set image.tag="${commit_id}" --set project_id="${project_id}"')
+                    //sh "kubectl create deployment docker-flask-deploy --image=gcr.io/${project_id}/docker-flask:${commit_id}"
+                   // sh "kubectl expose deployment docker-flask-deploy --type=LoadBalancer --port 80 --target-port 5000"
+                    }
+                  }
+                }
+              }
+        }
 
+        stage("VERIFY DEPLOY") {
+            steps {
+                timeout(time: 30, unit: 'MINUTES') {
+                    input 'Do you want to destroy the env?'
+                }
+            }
+        }
 
 
         stage("GENERATE DESTROY PLAN") {
             steps {
                 script {
-                container('terraform'){
-                    dir('terraform') {
-                        sh "terraform -destroy"
+                container('tools'){
+                    dir('terraform_landscape') {
+                      sshagent(['github-ssh-key']){
+                        unstash 'creds'
+                        sh "terraform init"
+                        sh "terraform plan -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -out myplan -destroy"
+                        stash name: 'destroyPlan', includes: 'myplan'
+                       }
                     }
                 }
             }
@@ -159,14 +200,18 @@ pipeline {
         stage("DESTROYING NOW") {
             steps {
                 script {
-                container('terraform'){
-                    dir('terraform') {
+                container('tools'){
+                    dir('terraform_landscape') {
+                      sshagent(['github-ssh-key']){
+                        unstash 'creds'
+
                         sh "terraform init"
-                        sh "terraform destroy -force"
+                        sh "terraform destroy -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -auto-approve"
+                        }   
                     }
                 }
             }
         }
-    }
+        }
 }
 }

@@ -5,7 +5,7 @@ terraform {
   # Store Terraform state and the history of all revisions remotely, and protect that state with locks to prevent corruption.
   backend "gcs" {
     # The name of the Google Cloud Storage (GCS) bucket
-    bucket  = "tf-state-bkup-quixotic-hash-265113"
+    bucket      = "tf-state-bkup-quixotic-hash-265113"
     credentials = "credentials.json"
   }
 }

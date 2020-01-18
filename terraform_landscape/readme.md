@@ -50,8 +50,9 @@ gcloud services enable cloudresourcemanager.googleapis.com
 gcloud services enable compute.googleapis.com
 gcloud services enable container.googleapis.com
 gcloud services enable iam.googleapis.com
+gcloud services enable cloudbilling.googleapis.com
 ```
-Make sure that you have minimum 0.12 version of terraform installed.
+Make sure that you have minimum 0.12.19 version of terraform installed.
 
 Create a service account for terraform to provision the infrastructure.
 ```
@@ -117,6 +118,34 @@ App should now be available over EXTERNAL-IP
 
 `open http://EXTERNAL-IP`
 
+Alternativey, you can use `helm charts` to manage your deployments. Make sure to install the tiller on GCP or local cluster before running any helm commands for the first time.
+
+- Install helm tiller on the GCP cluster once provisioned before running any helm commands
+
+```kubectl --namespace kube-system create sa tiller
+# create a cluster role binding for tiller
+kubectl create clusterrolebinding tiller \
+    --clusterrole cluster-admin \
+    --serviceaccount=kube-system:tiller
+```
+echo "initialize helm"
+- Initialized helm within the tiller service account
+`helm init --service-account tiller`
+- Updates the repos for Helm repo integration
+`helm repo update`
+
+echo "verify helm"
+
+- verify that helm is installed in the cluster
+`kubectl get deploy,svc tiller-deploy -n kube-system`
+
+
+Now, helm can be used to deploy your application charts.
+
+```
+helm init --client-only --skip-refresh
+helm upgrade --install --wait docker-flask ./docker-flask --set image.tag="${commit_id}" --set project_id="${project_id}"
+```
 
 ## Cleaning Up
 
@@ -131,4 +160,10 @@ Next, to destroy the GKE cluster, run the terraform destroy command:
 `terraform destroy`
 
 Further, you may want to delete the bucket and service account created for storing terraform plan.
+
+Alternatively `helm' can be use to deploy and upgrade deployment to cluster.
+
+
+
+
 
