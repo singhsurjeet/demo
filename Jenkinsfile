@@ -113,7 +113,7 @@ pipeline {
                         sshagent(['github-ssh-key']){
                             unstash 'creds'
                             sh "./init.sh ${env.project_id} ${env.region} ${env.billing_account_id}"
-                            sh "terraform plan -var="project_id=${var.project_id}" -var="region=${var.region}" -var="location=${var.region}-a" -out myplan "
+                            sh "terraform plan -var 'project_id=${var.project_id}' -var 'region=${var.region}' -var 'location=${var.region}-a' -out myplan "
                             stash name: 'terraformplan' , includes: 'myplan'
                             }
                         }
