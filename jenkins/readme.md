@@ -48,13 +48,13 @@ Alternaively you can login from `docker login` as shown in pipeline.
 
 Please make sure that you have configured the kubernetes cloud in your jenkins config.
 
-![](https://github.com/singhsurjeet/jenkins-terraform-gke-flask/blob/develop/images/k8scloud.png)
+![](/images/k8scloud.png)
 
 Once done, you can now simply go-ahead and [configure](https://github.com/gitbucket/gitbucket/wiki/Setup-Jenkins-Multibranch-Pipeline-and-Organization) a new multi branch pipeline project and cofigure your git repository after adding your ssh key in jenkins credentials.
 
 Once you see your branches in jenkins project. Click on build with parameters to specify all the params and click on build.
 
-![](https://github.com/singhsurjeet/jenkins-terraform-gke-flask/blob/develop/images/Picture2.png)
+![](/images/Picture2.png)
 
 
 

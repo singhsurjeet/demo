@@ -1,5 +1,5 @@
 
-![](https://github.com/singhsurjeet/jenkins-terraform-gke-flask/blob/develop/images/jenkins-tf-gke.png)
+![](/images/jenkins-tf-gke.png)
 
 ## Instructions Manual:
 
@@ -18,16 +18,16 @@ Make sure to follow some of the intiial guidelines in step 2 to setup your GCP a
 
 - Initially, the pipeline will get the GCP service account credentials from Jenkins credential store and build the app and push to GCR registry, it then validates the terraform scripts and create a plan to provision the infrastructure.
 
-![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture3.png)
+![](/images/Picture3.png)
 
 - Once approved, pipeline will provision the GCP and GKE infrastrcuture and deploy the application HELM chart
 
-![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture4.png)
+![](/images/Picture4.png)
 
 - Once the app is acessible over the ExternalIP/Loadbalancer, you can approve to generate the infra destruction plan.
-![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture5.png)
+![](/images/Picture5.png)
 
 - If you are fine with the destrucution plan, approve to terminate all the provisioned infrastructure
  
- ![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture6.png)
+ ![](/images/Picture6.png)
  
