@@ -48,9 +48,9 @@ pipeline {
         disableConcurrentBuilds()
     }
     parameters {
-            string(name: 'project_id', defaultValue: 'quixotic-hash-265113', description: 'GCP project ID')
+            string(name: 'project_id', defaultValue: '', description: 'GCP project ID')
             string(name: 'region', defaultValue: 'europe-west3', description: 'GCP region')
-            string(name: 'billing_account_id', defaultValue: '0114AF-A8061F-7F222A', description: 'GCP project billing ID')
+            string(name: 'billing_account_id', defaultValue: '', description: 'GCP project billing ID')
         }
     environment{
             commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
