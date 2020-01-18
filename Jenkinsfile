@@ -79,30 +79,30 @@ pipeline {
                         dir('docker_flask') {
                         unstash 'creds'
                         def commit_id =  sh(returnStdout: true, script: 'git rev-parse --short HEAD').trim()
-                        //sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
-                        // sh "docker build -t gcr.io/${project_id}/docker-flask:${commit_id} ."
-                        // sh "docker push gcr.io/${project_id}/docker-flask:${commit_id}"
+                        sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
+                        sh "docker build -t gcr.io/${project_id}/docker-flask:${commit_id} ."
+                        sh "docker push gcr.io/${project_id}/docker-flask:${commit_id}"
                     }
                   }
                }
             }
         }
 
-        // stage("TERRAFORM_VALIDATE") {
-        //     steps {
-        //         script {
-        //         container('tools'){
-        //             dir('terraform_landscape') {
-        //                 sshagent(['github-ssh-key']){
-        //                     unstash 'creds'
-        //                     sh "terraform init -backend=false"
-        //                     sh "terraform validate"
-        //                 }
-        //             }
-        //         }
-        //      }
-        //   }
-        // }
+        stage("TERRAFORM_VALIDATE") {
+            steps {
+                script {
+                container('tools'){
+                    dir('terraform_landscape') {
+                        sshagent(['github-ssh-key']){
+                            unstash 'creds'
+                            sh "terraform init -backend=false"
+                            sh "terraform validate"
+                        }
+                    }
+                }
+             }
+          }
+        }
     
 
         stage("TF_PLAN") {
@@ -167,7 +167,7 @@ pipeline {
                 container('tools'){
                     dir('terraform') {
                         unstash 'creds'
-                        sh "terraform -destroy"
+                        sh "terraform destroy"
                     }
                 }
             }
