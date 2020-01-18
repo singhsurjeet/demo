@@ -52,6 +52,9 @@ pipeline {
             string(name: 'region', defaultValue: 'europe-west3', description: 'GCP region')
             string(name: 'billing_account_id', defaultValue: '0114AF-A8061F-7F222A', description: 'GCP project billing ID')
         }
+    environment{
+            GIT_SSH_COMMAND="ssh -o UserKnownHostsFile=/dev/null -o StrictHostKeyChecking=no"
+        }
 
     stages {
 
@@ -90,14 +93,14 @@ pipeline {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
-                        withCredentials([sshUserPrivateKey(credentialsId: 'github-ssh-key', keyFileVariable: 'key_path', passphraseVariable: 'pass', usernameVariable: 'user')]) {
-                        unstash 'creds'
-                        sh "terraform init"
-                        sh "terraform validate -check-variables=true"
+                        sshagent(['github-ssh-key']){
+                            unstash 'creds'
+                            sh "terraform init --input=false"
+                            sh "terraform validate -check-variables=true"
+                        }
                     }
                 }
-              }
-            }
+             }
           }
         }
     
@@ -107,15 +110,18 @@ pipeline {
                 script {
                 container('tools'){
                     dir('terraform_landscape') {
-                        unstash 'creds'
-                        sh "./init.sh -var project_id="${var.project_id}" -var region="${var.region}" -var billing_account_id}="${var.billing_account_id}
-                        sh "terraform plan -var project_id=${var.project_id} -var region=${var.region} -var location=${var.region}-a -out myplan "
-                        stash name: 'terraformplan' , includes: 'myplan'
+                        sshagent(['github-ssh-key']){
+                            unstash 'creds'
+                            sh "./init.sh -var project_id="${var.project_id}" -var region="${var.region}" -var billing_account_id}="${var.billing_account_id}
+                            sh "terraform plan -var project_id=${var.project_id} -var region=${var.region} -var location=${var.region}-a -out myplan "
+                            stash name: 'terraformplan' , includes: 'myplan'
+                            }
+                        }
                     }
-                }
-              }
-          }
+                }  
+            }
         }
+
         stage("APPROVE PLAN") {
             steps {
                 timeout(time: 30, unit: 'MINUTES') {
@@ -133,11 +139,12 @@ pipeline {
                         unstash 'terraformplan'
                         sh "terraform apply -input=false myplan"
                         sh "sleep 60"
+                       }
                     }
                 }
             }
         }
-        }
+
 
         stage("DEPLOY APP"){
                 steps {
@@ -151,7 +158,6 @@ pipeline {
                   }
                 }
               }
-
 
 
         stage("GENERATE DESTROY PLAN") {
