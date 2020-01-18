@@ -182,6 +182,7 @@ pipeline {
                         unstash 'creds'
                         sh "terraform init"
                         sh "terraform plan -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -out myplan -destroy"
+                        stash name: 'destroyPlan', includes: 'myplan'
                        }
                     }
                 }
@@ -203,8 +204,9 @@ pipeline {
                     dir('terraform_landscape') {
                       sshagent(['github-ssh-key']){
                         unstash 'creds'
+
                         sh "terraform init"
-                        sh "terraform destroy -auto-approve"
+                        sh "terraform destroy -var 'project_id=${project_id}' -var 'region=${region}' -var 'location=${region}-a' -auto-approve"
                         }   
                     }
                 }
