@@ -2,7 +2,7 @@
 
 ### Pre-requisite
 
-- Jenksin server up and runinng
+- Jenkins server up and runinng
 - Kubernetes cluster to schedule CI/CD workloads.
 
 Alternatively, you can deploy the jenkins on you local minikube or docker-desktop cluster as below.
