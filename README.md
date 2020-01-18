@@ -1,4 +1,4 @@
-## Instructions :
+## Instructions Manual:
 
 1. [Build Flask docker API](docker_flask/readme.md).
 
@@ -6,9 +6,25 @@
        
 2. [Provision the GKE and GCP infrastrucutre via terraform and deploy the flask API to GKE kubernetes cluster accessible via cloud load balancer](terraform_landscape/readme.md).
 
-3.  For CI/CD and infra provisionig jenkins pipelines, please follow this [guide](jenkins/readme.md).
+## Automated Jenkins CI/CD Pipeline
 
-    Root directory has the actual [Jenkinsfile](Jenkinsfile), which is used to automate the process.
+Make sure to follow some of the intiial guidelines in step 2 to setup your GCP account and pre-requisites.
 
+ For CI/CD and infra provisionig jenkins pipelines, please follow this [guide](jenkins/readme.md).
+ Jenkins project will look for [Jenkinsfile](Jenkinsfile), which is used to automate the process.
 
+- Initially, the pipeline will get the GCP service account credentials from Jenkins credential store and build the app and push to GCR registry, it then validates the terraform scripts and create a plan to provision the infrastructure.
 
+![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture3.png)
+
+- Once approved, pipeline will provision the GCP and GKE infrastrcuture and deploy the HELM chart
+
+![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture4.png)
+
+- Once the app is acessible over the ExternalIP/Loadbalancer, you can approve to generate the infra destruction plan.
+![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture5.png)
+
+- If you are fine with the destrucution plan, approve to terminate all the provisioned infrastructure
+ 
+ ![](https://github.com/singhsurjeet/terraform-gke-flask/blob/develop/images/Picture6.png)
+ 
