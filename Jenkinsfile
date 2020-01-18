@@ -94,8 +94,6 @@ pipeline {
                 container('tools'){
                     dir('terraform_landscape') {
                         sshagent(['github-ssh-key']){
-                            unstash 'creds'
-                            sh "terraform init --input=false"
                             sh "terraform validate"
                         }
                     }
