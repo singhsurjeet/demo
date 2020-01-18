@@ -139,6 +139,9 @@ echo "verify helm"
 - verify that helm is installed in the cluster
 `kubectl get deploy,svc tiller-deploy -n kube-system`
 
+
+Now, helm can be used to deploy your application charts.
+
 ```
 helm init --client-only --skip-refresh
 helm upgrade --install --wait docker-flask ./docker-flask --set image.tag="${commit_id}" --set project_id="${project_id}"
