@@ -179,6 +179,7 @@ pipeline {
                 container('tools'){
                     dir('terraform') {
                         unstash 'creds'
+                        sh "terraform init"
                         sh "terraform destroy"
                     }
                 }
