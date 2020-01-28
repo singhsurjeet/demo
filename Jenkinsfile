@@ -25,7 +25,7 @@ pipeline {
         - cat
         tty: true
       - name: docker
-        image: surjeet112/docker:17.03.2-ce-rc1-dind-git
+        image: surjeet112/docker:dind
         imagePullPolicy: IfNotPresent
         command:
         - cat
@@ -79,7 +79,7 @@ pipeline {
                     container('docker') {
                         dir('docker_flask') {
                         unstash 'creds'
-                        sh 'docker login -u _json_key -p "$(cat credentials.json)" https://gcr.io'
+                        sh 'cat credentials.json | docker login -u _json_key --password-stdin https://gcr.io'
                         sh "docker build -t gcr.io/${project_id}/docker-flask:${commit_id} ."
                         sh "docker push gcr.io/${project_id}/docker-flask:${commit_id}"
                     }
