@@ -1,7 +1,7 @@
 
 ![](/images/jenkins-tf-gke.png)
 
-## Instructions Manual:
+## Instructions:
 
 1. [Build Flask docker API](docker_flask/readme.md).
 
