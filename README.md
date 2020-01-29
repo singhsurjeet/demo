@@ -11,7 +11,7 @@
 
 ## Automated Jenkins CI/CD Pipeline
 
-Make sure to follow some of the intiial guidelines [pre-reqs section 1,2,3](terraform_landscape/readme.md) to setup your GCP account.
+Make sure to follow some of the intiial guidelines [pre-reqs section 1,2,3](terraform_landscape/readme.md) along with enabling API endpoints and service account creation for infrastructure provisioning to setup your GCP account.
 
  For CI/CD and infra provisionig jenkins pipelines, please follow this [guide](jenkins/readme.md).
  Jenkins project will look for [Jenkinsfile](Jenkinsfile), which is used to automate the process.

@@ -42,7 +42,7 @@ Copy the entire string and paste it into the Secret box, then click OK.
 
 `base64 ./credentials.json > credentials.json`
 
-Plus, follow this for configuring access to GCR repo. [guide](https://medium.com/google-cloud/how-to-push-docker-image-to-google-container-registry-gcr-through-jenkins-job-52b9d5ce9f7f) on how to push images to GCR from jenkins.
+Plus, follow the configuration access to GCR repo if you are using GCR plugins in jenkins. [Guide](https://medium.com/google-cloud/how-to-push-docker-image-to-google-container-registry-gcr-through-jenkins-job-52b9d5ce9f7f) on how to push images to GCR from jenkins.
 
 Alternaively you can login from `docker login` as shown in pipeline.
 
