@@ -122,11 +122,11 @@ Alternativey, you can use `helm charts` to manage your deployments. Make sure to
 
 - Configure helm tiller on the GCP cluster once provisioned before running any helm commands.
 
-# add a service account within a namespace to segregate tiller
+### add a service account within a namespace to segregate tiller
 
 `kubectl --namespace kube-system create sa tiller`
 
-# create a cluster role binding for tiller
+### create a cluster role binding for tiller
 ```
 kubectl create clusterrolebinding tiller \
     --clusterrole cluster-admin \
