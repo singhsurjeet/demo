@@ -120,14 +120,19 @@ App should now be available over EXTERNAL-IP
 
 Alternativey, you can use `helm charts` to manage your deployments. Make sure to install the tiller on GCP or local cluster before running any helm commands for the first time.
 
-- Install helm tiller on the GCP cluster once provisioned before running any helm commands
+- Configure helm tiller on the GCP cluster once provisioned before running any helm commands.
 
-```kubectl --namespace kube-system create sa tiller
-# create a cluster role binding for tiller
+### add a service account within a namespace to segregate tiller
+
+`kubectl --namespace kube-system create sa tiller`
+
+### create a cluster role binding for tiller
+```
 kubectl create clusterrolebinding tiller \
     --clusterrole cluster-admin \
     --serviceaccount=kube-system:tiller
 ```
+
 echo "initialize helm"
 - Initialized helm within the tiller service account
 `helm init --service-account tiller`
