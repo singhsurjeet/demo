@@ -12,8 +12,9 @@ Alternatively, you can deploy the jenkins on you local minikube or docker-deskto
 Run the helm command locally and follow the instructions to login to your jenkins box
 
 ```
-helm init
-helm install --name jenkins-demo stable/jenkins
+helm repo add jenkins https://charts.jenkins.io
+helm repo update
+helm install jenkins-demo jenkins/jenkins
 ```
 
 Incase, If you already have the jenkins instance up and running. Go head and configure the credentials for GIT-SSH-KEY and GCP service account.
